@@ -180,8 +180,8 @@ async function generatePNGForSections(
 
     if (section.hotkeys && section.hotkeys.length > 0) {
       // Calculate table dimensions
-      // Reduce key column since abbreviations are much shorter
-      const keyColWidth = Math.floor(contentWidth * 0.28);
+      // Wider key column to prevent overlap with larger fonts
+      const keyColWidth = Math.floor(contentWidth * 0.35);
       const funcColWidth = contentWidth - keyColWidth - COL_SPACING;
 
       // Header row
@@ -256,8 +256,8 @@ async function generatePNGForSections(
     }
 
     if (section.hotkeys && section.hotkeys.length > 0) {
-      // Reduce key column since abbreviations are much shorter
-      const keyColWidth = Math.floor(contentWidth * 0.28);
+      // Wider key column to prevent overlap with larger fonts
+      const keyColWidth = Math.floor(contentWidth * 0.35);
       const funcColWidth = contentWidth - keyColWidth - COL_SPACING;
       const tableStartX = PADDING;
 
