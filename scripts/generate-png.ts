@@ -19,6 +19,12 @@ interface CheatsheetData {
   sections: Section[];
 }
 
+interface PNGFile {
+  buffer: Buffer;
+  height: number;
+  fileNum: number;
+}
+
 // Constants from MXW01_READABILITY_GUIDE
 const PRINTER_WIDTH = 384;
 const PADDING = 16;
@@ -29,6 +35,7 @@ const FONT_SIZE_KEYS = 12;
 const FONT_FAMILY = "Arial";
 const LINE_HEIGHT = 1.3;
 const COL_SPACING = 8;
+const MAX_LINES = 60;
 
 interface TextMetrics {
   width: number;
@@ -77,14 +84,60 @@ function wrapText(
   return lines;
 }
 
-async function generateCheatsheetPNG(
-  tomlPath: string,
-  outputPath: string
-): Promise<number> {
-  const content = await readFile(tomlPath, "utf-8");
-  const data = parse(content) as CheatsheetData;
-  const { metadata, sections } = data;
+function countLines(sections: Section[], includeHeader: boolean = true): number {
+  let count = 0;
+  
+  if (includeHeader) {
+    count += 3; // Title + blank line + source
+  }
 
+  for (const section of sections) {
+    count += 2; // Section heading + blank
+    if (section.note) {
+      count += 2; // Note + blank
+    }
+    if (section.hotkeys && section.hotkeys.length > 0) {
+      count += 2; // Table header + separator
+      count += section.hotkeys.length; // Rows
+      count += 1; // Blank after table
+    }
+  }
+
+  return count;
+}
+
+function splitSections(sections: Section[]): Section[][] {
+  const parts: Section[][] = [];
+  let currentPart: Section[] = [];
+  let currentLineCount = 3; // Title + blank + source
+
+  for (const section of sections) {
+    const sectionLines = countLines([section], false);
+    
+    // Check if adding this section would exceed limit
+    if (currentLineCount + sectionLines > MAX_LINES && currentPart.length > 0) {
+      // Save current part and start new one
+      parts.push(currentPart);
+      currentPart = [section];
+      currentLineCount = 3 + sectionLines;
+    } else {
+      currentPart.push(section);
+      currentLineCount += sectionLines;
+    }
+  }
+
+  if (currentPart.length > 0) {
+    parts.push(currentPart);
+  }
+
+  return parts;
+}
+
+async function generatePNGForSections(
+  sections: Section[],
+  metadata: Record<string, string>,
+  isContinued: boolean = false
+): Promise<{ buffer: Buffer; height: number }> {
   // First pass: calculate dimensions
   const tempCanvas = createCanvas(PRINTER_WIDTH, 1);
   const ctx = tempCanvas.getContext("2d");
@@ -93,7 +146,10 @@ async function generateCheatsheetPNG(
   const contentWidth = PRINTER_WIDTH - PADDING * 2;
 
   // Title
-  totalHeight += FONT_SIZE_TITLE * LINE_HEIGHT + 8;
+  const titleText = isContinued
+    ? `${metadata.title} (continued)`
+    : metadata.title;
+  totalHeight += FONT_SIZE_TITLE * LINE_HEIGHT + 12;
 
   // Sections
   for (const section of sections) {
@@ -103,7 +159,7 @@ async function generateCheatsheetPNG(
       const noteLines = wrapText(
         ctx,
         section.note,
-        contentWidth - 8,
+        contentWidth,
         FONT_SIZE_TEXT - 1
       );
       totalHeight += noteLines.length * (FONT_SIZE_TEXT * LINE_HEIGHT) + 8;
@@ -115,7 +171,7 @@ async function generateCheatsheetPNG(
       const funcColWidth = contentWidth - keyColWidth - COL_SPACING;
 
       // Header row
-      totalHeight += FONT_SIZE_KEYS * LINE_HEIGHT + 8 + 2; // 2px border
+      totalHeight += FONT_SIZE_KEYS * LINE_HEIGHT + 8;
 
       // Data rows
       for (const hotkey of section.hotkeys) {
@@ -128,11 +184,11 @@ async function generateCheatsheetPNG(
         );
         const rowHeight = Math.max(keyLines.length, descLines.length) *
           FONT_SIZE_TEXT *
-          LINE_HEIGHT + 6;
-        totalHeight += rowHeight + 1; // 1px border
+          LINE_HEIGHT + 4;
+        totalHeight += rowHeight + 4;
       }
 
-      totalHeight += 12; // Space after table
+      totalHeight += 8;
     }
   }
 
@@ -155,7 +211,7 @@ async function generateCheatsheetPNG(
 
   // Title
   renderCtx.font = `bold ${FONT_SIZE_TITLE}px ${FONT_FAMILY}`;
-  renderCtx.fillText(metadata.title, PADDING, y + FONT_SIZE_TITLE);
+  renderCtx.fillText(titleText, PADDING, y + FONT_SIZE_TITLE);
   y += FONT_SIZE_TITLE * LINE_HEIGHT + 12;
 
   // Sections
@@ -245,9 +301,33 @@ async function generateCheatsheetPNG(
 
   // Write PNG
   const buffer = canvas.toBuffer("image/png");
-  await writeFile(outputPath, buffer);
+  return { buffer, height: totalHeight };
+}
 
-  return totalHeight;
+async function generateCheatsheetPNGs(tomlPath: string): Promise<PNGFile[]> {
+  const content = await readFile(tomlPath, "utf-8");
+  const data = parse(content) as CheatsheetData;
+  const { metadata, sections } = data;
+
+  // Split sections into parts
+  const parts = splitSections(sections);
+
+  const pngFiles: PNGFile[] = [];
+
+  for (let i = 0; i < parts.length; i++) {
+    const { buffer, height } = await generatePNGForSections(
+      parts[i],
+      metadata,
+      i > 0
+    );
+    pngFiles.push({
+      buffer,
+      height,
+      fileNum: i + 1,
+    });
+  }
+
+  return pngFiles;
 }
 
 async function main() {
@@ -266,11 +346,32 @@ async function main() {
   for (const file of tomlFiles) {
     const tomlPath = join(dataDir, file);
     const baseName = basename(file, ".toml");
-    const outputPath = join(outputDir, `${baseName}.png`);
 
     try {
-      const height = await generateCheatsheetPNG(tomlPath, outputPath);
-      console.log(`✓ Generated: ${outputPath} (${PRINTER_WIDTH}x${Math.round(height)})`);
+      const pngFiles = await generateCheatsheetPNGs(tomlPath);
+
+      if (pngFiles.length === 1) {
+        const outputPath = join(outputDir, `${baseName}.png`);
+        await writeFile(outputPath, pngFiles[0].buffer);
+        console.log(
+          `✓ Generated: ${outputPath} (${PRINTER_WIDTH}x${Math.round(
+            pngFiles[0].height
+          )})`
+        );
+      } else {
+        for (const pngFile of pngFiles) {
+          const outputPath = join(
+            outputDir,
+            `${baseName}_part${pngFile.fileNum}.png`
+          );
+          await writeFile(outputPath, pngFile.buffer);
+          console.log(
+            `✓ Generated: ${outputPath} (${PRINTER_WIDTH}x${Math.round(
+              pngFile.height
+            )})`
+          );
+        }
+      }
     } catch (error) {
       console.error(`✗ Error processing ${file}:`, error);
     }
