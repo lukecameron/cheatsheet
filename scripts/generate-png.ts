@@ -30,11 +30,11 @@ interface PNGFile {
 // Constants from MXW01_READABILITY_GUIDE
 const PRINTER_WIDTH = 384;
 const PADDING = 16;
-const FONT_SIZE_TITLE = 24;
-const FONT_SIZE_HEADING = 20;
-const FONT_SIZE_TEXT = 17;
-const FONT_SIZE_KEYS = 16;
-const FONT_FAMILY = "Courier";
+const FONT_SIZE_TITLE = 36;
+const FONT_SIZE_HEADING = 30;
+const FONT_SIZE_TEXT = 26;
+const FONT_SIZE_KEYS = 24;
+const FONT_FAMILY = "Arial";
 const LINE_HEIGHT = 1.5;
 const COL_SPACING = 10;
 const MAX_LINES = 60;
