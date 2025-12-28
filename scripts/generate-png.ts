@@ -156,9 +156,7 @@ async function generateCheatsheetPNG(
   // Title
   renderCtx.font = `bold ${FONT_SIZE_TITLE}px ${FONT_FAMILY}`;
   renderCtx.fillText(metadata.title, PADDING, y + FONT_SIZE_TITLE);
-  y += FONT_SIZE_TITLE * LINE_HEIGHT;
-  renderCtx.strokeRect(PADDING, y - 4, contentWidth, 2);
-  y += 12;
+  y += FONT_SIZE_TITLE * LINE_HEIGHT + 12;
 
   // Sections
   for (const section of sections) {
@@ -172,23 +170,19 @@ async function generateCheatsheetPNG(
       const noteLines = wrapText(
         renderCtx,
         section.note,
-        contentWidth - 8,
+        contentWidth,
         FONT_SIZE_TEXT - 1
       );
 
-      // Draw note box
-      const noteHeight = noteLines.length * (FONT_SIZE_TEXT * LINE_HEIGHT) + 8;
-      renderCtx.strokeRect(PADDING, y, contentWidth, noteHeight);
-
-      // Draw note text
+      // Draw note text with left indent for visual hierarchy
       for (let i = 0; i < noteLines.length; i++) {
         renderCtx.fillText(
           noteLines[i],
-          PADDING + 4,
-          y + 4 + (i + 1) * FONT_SIZE_TEXT * LINE_HEIGHT
+          PADDING + 12,
+          y + (i + 1) * FONT_SIZE_TEXT * LINE_HEIGHT
         );
       }
-      y += noteHeight + 8;
+      y += noteLines.length * (FONT_SIZE_TEXT * LINE_HEIGHT) + 8;
     }
 
     if (section.hotkeys && section.hotkeys.length > 0) {
@@ -196,29 +190,15 @@ async function generateCheatsheetPNG(
       const funcColWidth = contentWidth - keyColWidth - COL_SPACING;
       const tableStartX = PADDING;
 
-      // Table border
-      const tableStartY = y;
-      renderCtx.strokeRect(
-        tableStartX,
-        tableStartY,
-        contentWidth,
-        200
-      ); // Will be fixed later
-
       // Header
       renderCtx.font = `bold ${FONT_SIZE_KEYS}px ${FONT_FAMILY}`;
-      renderCtx.fillText("Hotkey", tableStartX + 4, y + FONT_SIZE_KEYS);
+      renderCtx.fillText("Hotkey", tableStartX, y + FONT_SIZE_KEYS);
       renderCtx.fillText(
         "Function",
-        tableStartX + keyColWidth + COL_SPACING + 4,
+        tableStartX + keyColWidth + COL_SPACING,
         y + FONT_SIZE_KEYS
       );
-      y += FONT_SIZE_KEYS * LINE_HEIGHT + 6;
-      renderCtx.beginPath();
-      renderCtx.moveTo(tableStartX, y);
-      renderCtx.lineTo(tableStartX + contentWidth, y);
-      renderCtx.stroke();
-      y += 4;
+      y += FONT_SIZE_KEYS * LINE_HEIGHT + 8;
 
       // Data rows
       for (const hotkey of section.hotkeys) {
@@ -236,14 +216,14 @@ async function generateCheatsheetPNG(
         );
         const rowHeight = Math.max(keyLines.length, descLines.length) *
           FONT_SIZE_TEXT *
-          LINE_HEIGHT + 6;
+          LINE_HEIGHT + 4;
 
         renderCtx.font = `bold ${FONT_SIZE_KEYS}px ${FONT_FAMILY}`;
         for (let i = 0; i < keyLines.length; i++) {
           renderCtx.fillText(
             keyLines[i],
-            tableStartX + 4,
-            y + 4 + (i + 1) * FONT_SIZE_KEYS * LINE_HEIGHT
+            tableStartX,
+            y + (i + 1) * FONT_SIZE_KEYS * LINE_HEIGHT
           );
         }
 
@@ -251,20 +231,15 @@ async function generateCheatsheetPNG(
         for (let i = 0; i < descLines.length; i++) {
           renderCtx.fillText(
             descLines[i],
-            tableStartX + keyColWidth + COL_SPACING + 4,
-            y + 4 + (i + 1) * FONT_SIZE_TEXT * LINE_HEIGHT
+            tableStartX + keyColWidth + COL_SPACING,
+            y + (i + 1) * FONT_SIZE_TEXT * LINE_HEIGHT
           );
         }
 
-        y += rowHeight;
-        renderCtx.beginPath();
-        renderCtx.moveTo(tableStartX, y);
-        renderCtx.lineTo(tableStartX + contentWidth, y);
-        renderCtx.stroke();
-        y += 2;
+        y += rowHeight + 4;
       }
 
-      y += 12;
+      y += 8;
     }
   }
 
