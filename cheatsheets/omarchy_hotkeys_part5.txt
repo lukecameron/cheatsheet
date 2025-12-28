@@ -1,55 +1,41 @@
-══════════════════════════════════════════════════
-Omarchy Hotkeys (continued)                       
-══════════════════════════════════════════════════
+═══════════════════════════════════
+Omarchy Hotkeys (continued)        
+═══════════════════════════════════
 
-──────────────────────────────────────────────────
-Neovim (w/ lazyvim) - Sidebar                     
-──────────────────────────────────────────────────
+───────────────────────────────────
+Neovim (w/ lazyvim) - Navigation   
+───────────────────────────────────
 
-A                 Add new file in parent dir      
-Sh-A              Add new subdir in parent dir    
-D                 Delete highlighted file/dir     
-M                 Move highlighted file/dir       
-R                 Rename highlighted file/dir     
-?                 Show help for all commands      
+See all the Neovim hotkeys
+configured by LazyVim:
+https://www.lazyvim.org/keymaps
 
-──────────────────────────────────────────────────
-Quick Emojis                                      
-──────────────────────────────────────────────────
+Space        Show command options  
+SpaceSpace   Open file via fuzzy   
+             search                
+SpaceE       Toggle sidebar        
+SpaceGG      Show git controls     
+SpaceSG      Search file content   
+C-WW         Jump between sidebar  
+             and editor            
+C-Left/rightarrowChange size of sidebar
+Sh-H         Go to left file tab   
+Sh-L         Go to right file tab  
+SpaceBD      Close file tab        
 
-Use Super + Ctrl + E to show a complete emoji
-picker. These are quick access options.
+───────────────────────────────────
+Neovim (w/ lazyvim) - Sidebar      
+───────────────────────────────────
 
-CapsLockMS        😄 smile                        
-CapsLockMC        😂 cry                          
-CapsLockML        😍 love                         
-CapsLockMV        ✌️ victory                      
-CapsLockMH        ❤️ heart                        
-CapsLockMY        👍 yes                          
-CapsLockMN        👎 no                           
-CapsLockMF        🖕 fuck                         
-CapsLockMW        🤞 wish                         
-CapsLockMR        🤘 rock                         
-CapsLockMK        😘 kiss                         
-CapsLockME        🙄 eyeroll                      
-CapsLockMP        🙏 pray                         
-CapsLockMD        🤤 drool                        
-CapsLockMM        💰 money                        
-CapsLockMX        🎉 xellebrate                   
-CapsLockM1        💯 100%                         
-CapsLockMT        🥂 toast                        
-CapsLockMO        👌 ok                           
-CapsLockMG        👋 greeting                     
-CapsLockMA        💪 arm                          
-CapsLockMB        🤯 blowing                      
-
-──────────────────────────────────────────────────
-Quick Completions                                 
-──────────────────────────────────────────────────
-
-Add more by editing ~/.XCompose, then run
-omarchy-restart-xcompose
-
-CapsLockSpaceSpace— (mdash)                       
-CapsLockSpaceN    Your name (as entered on setup) 
-CapsLockSpaceE    Your email (as entered on setup)
+A            Add new file in parent
+             dir                   
+Sh-A         Add new subdir in     
+             parent dir            
+D            Delete highlighted    
+             file/dir              
+M            Move highlighted      
+             file/dir              
+R            Rename highlighted    
+             file/dir              
+?            Show help for all     
+             commands              

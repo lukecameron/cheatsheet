@@ -1,53 +1,51 @@
-══════════════════════════════════════════════════
-Omarchy Hotkeys (continued)                       
-══════════════════════════════════════════════════
+═══════════════════════════════════
+Omarchy Hotkeys (continued)        
+═══════════════════════════════════
 
-──────────────────────────────────────────────────
-Ghostty Terminal                                  
-──────────────────────────────────────────────────
+───────────────────────────────────
+Toggles                            
+───────────────────────────────────
 
-C-Sh-E            New split below                 
-C-Sh-O            New split besides               
-C-A-Arrows        Move between splits             
-S-C-Sh-Arrows     Resize split by 10 lines        
-S-C-Sh-A-Arrows   Resize split by 100 lines       
-C-Sh-T            New tab                         
-C-Sh-Arrows       Move between tabs               
-A-Numbers         Go to specific tab              
+S-C-I        Toggle idle/sleep     
+             prevention            
+S-C-N        Toggle nightlight     
+             display temperature   
+S-Sh-Space   Toggle the top bar    
+S-Mute       Switch to next audio  
+             output                
 
-──────────────────────────────────────────────────
-File Manager                                      
-──────────────────────────────────────────────────
+───────────────────────────────────
+Ghostty Terminal                   
+───────────────────────────────────
 
-C-L               Go to path                      
-Space             Preview file (arrows navigate)  
-Backspace         Go back one folder              
+C-Sh-E       New split below       
+C-Sh-O       New split besides     
+C-A-Arrows   Move between splits   
+S-C-Sh-ArrowsResize split by 10    
+             lines                 
+S-C-Sh-A-ArrowsResize split by 100   
+             lines                 
+C-Sh-T       New tab               
+C-Sh-Arrows  Move between tabs     
+A-Numbers    Go to specific tab    
 
-──────────────────────────────────────────────────
-Apple Display Brightness Control                  
-──────────────────────────────────────────────────
+───────────────────────────────────
+File Manager                       
+───────────────────────────────────
 
-Apple displays have their own brightness control
-via asdcontrol
+C-L          Go to path            
+Space        Preview file (arrows  
+             navigate)             
+Backspace    Go back one folder    
 
-C-F1              Turn down brightness            
-C-F2              Turn up brightness              
-C-Sh-F2           Turn up brightness to maximum   
+───────────────────────────────────
+Apple Display Brightness Control   
+───────────────────────────────────
 
-──────────────────────────────────────────────────
-Neovim (w/ lazyvim) - Navigation                  
-──────────────────────────────────────────────────
+Apple displays have their own
+brightness control via asdcontrol
 
-See all the Neovim hotkeys configured by LazyVim:
-https://www.lazyvim.org/keymaps
-
-Space             Show command options            
-SpaceSpace        Open file via fuzzy search      
-SpaceE            Toggle sidebar                  
-SpaceGG           Show git controls               
-SpaceSG           Search file content             
-C-WW              Jump between sidebar and editor 
-C-Left/rightarrow Change size of sidebar          
-Sh-H              Go to left file tab             
-Sh-L              Go to right file tab            
-SpaceBD           Close file tab                  
+C-F1         Turn down brightness  
+C-F2         Turn up brightness    
+C-Sh-F2      Turn up brightness to 
+             maximum               

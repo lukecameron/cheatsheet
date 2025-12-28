@@ -1,42 +1,46 @@
-══════════════════════════════════════════════════
-Omarchy Hotkeys (continued)                       
-══════════════════════════════════════════════════
+═══════════════════════════════════
+Omarchy Hotkeys (continued)        
+═══════════════════════════════════
 
-──────────────────────────────────────────────────
-Launching apps                                    
-──────────────────────────────────────────────────
+───────────────────────────────────
+Launching apps                     
+───────────────────────────────────
 
 Change/add bindings in
 ~/.config/hypr/bindings.conf
 
-S-Return          Terminal                        
-S-Sh-B            Browser                         
-S-Sh-A-B          Browser (private/incognito)     
-S-Sh-F            File manager                    
-S-Sh-T            Activity (btop)                 
-S-Sh-M            Music (Spotify)                 
-S-Sh-/            Password manager (1password)    
-S-Sh-N            Neovim                          
-S-Sh-C            Calendar (HEY)                  
-S-Sh-E            Email (HEY)                     
-S-Sh-A            AI (ChatGPT)                    
-S-Sh-G            Messenger (Signal)              
-S-Sh-C-G          Messenger (WhatsApp)            
-S-Sh-A-G          Messenger (Google)              
-S-Sh-D            Docker (LazyDocker)             
-S-Sh-O            Obsidian                        
-S-Sh-X            X                               
-S-C-S             Share menu (via LocalSend)      
+S-Return     Terminal              
+S-Sh-B       Browser               
+S-Sh-A-B     Browser               
+             (private/incognito)   
+S-Sh-F       File manager          
+S-Sh-T       Activity (btop)       
+S-Sh-M       Music (Spotify)       
+S-Sh-/       Password manager      
+             (1password)           
+S-Sh-N       Neovim                
+S-Sh-C       Calendar (HEY)        
+S-Sh-E       Email (HEY)           
+S-Sh-A       AI (ChatGPT)          
+S-Sh-G       Messenger (Signal)    
+S-Sh-C-G     Messenger (WhatsApp)  
+S-Sh-A-G     Messenger (Google)    
+S-Sh-D       Docker (LazyDocker)   
+S-Sh-O       Obsidian              
+S-Sh-X       X                     
+S-C-S        Share menu (via       
+             LocalSend)            
 
-──────────────────────────────────────────────────
-Universal clipboard                               
-──────────────────────────────────────────────────
+───────────────────────────────────
+Universal clipboard                
+───────────────────────────────────
 
-Usually on Linux, you need Ctrl + Shift + C/V in
-terminal and Ctrl + C/V elsewhere. These work
+Usually on Linux, you need Ctrl +
+Shift + C/V in terminal and Ctrl +
+C/V elsewhere. These work
 everywhere.
 
-S-C               Copy                            
-S-X               Cut (not in terminal)           
-S-V               Paste                           
-S-C-V             Clipboard manager               
+S-C          Copy                  
+S-X          Cut (not in terminal) 
+S-V          Paste                 
+S-C-V        Clipboard manager     

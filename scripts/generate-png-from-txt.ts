@@ -11,10 +11,10 @@ interface TextFile {
 // Constants optimized for thermal printer (384px width)
 const PRINTER_WIDTH = 384;
 const PADDING = 8;
-const CHAR_WIDTH = 7.5; // Liberation Mono at 10px renders ~7.5px per char
-const CHAR_HEIGHT = 12; // Monospace line height
+const CHAR_WIDTH = 11.5; // Liberation Mono at 12px renders ~11.5px per char
+const CHAR_HEIGHT = 16; // Monospace line height (12px font + spacing)
 const FONT_FAMILY = "Liberation Mono";
-const FONT_SIZE = "10px";
+const FONT_SIZE = "12px";
 const DPI = 200; // Thermal printer typical resolution
 
 // Calculate how many characters fit per line at this width

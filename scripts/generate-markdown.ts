@@ -23,9 +23,9 @@ interface TextFile {
   lineCount: number;
 }
 
-// For monospace fonts at 384px width, approximately 51-54 characters fit
-// Using 50 chars for safety with Liberation Mono
-const LINE_WIDTH = 50;
+// For monospace fonts at 384px width with larger pixels
+// Using 35 chars for comfortable spacing with 11-12px font
+const LINE_WIDTH = 35;
 const MAX_LINES = 60;
 
 function countLines(text: string): number {
@@ -95,8 +95,8 @@ function generateSectionText(section: Section): string[] {
     for (const hotkey of section.hotkeys) {
       const abbreviatedKeys = abbreviateKeys(hotkey.keys);
       
-      // Calculate column positions: keys take 18 chars, description takes the rest
-      const keysCol = 18;
+      // Calculate column positions: keys take 13 chars, description takes the rest
+      const keysCol = 13;
       const descCol = LINE_WIDTH - keysCol;
       
       const formattedKeys = padRight(abbreviatedKeys, keysCol);
