@@ -6,8 +6,12 @@ node = "latest"
 
 [tasks.generate]
 description = "Generate all cheatsheets (text and PNG) from TOML data"
-run = "bun run scripts/generate.ts"
+run = "mise exec -- bun scripts/generate.ts"
 
 [tasks.build]
 description = "Generate all cheatsheets"
 run = "mise run generate"
+
+[tasks.lint]
+description = "Lint and type check code"
+run = ["mise exec -- bun install", "mise exec -- bun eslint scripts/", "mise exec -- bun tsc --noEmit"]

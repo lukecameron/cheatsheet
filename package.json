@@ -8,7 +8,12 @@
     "toml": "latest"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@eslint/js": "latest",
+    "@types/bun": "latest",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
+    "eslint": "latest",
+    "typescript": "^5"
   },
   "peerDependencies": {
     "typescript": "^5"

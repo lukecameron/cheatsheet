@@ -104,10 +104,11 @@ function generateSectionText(section: Section): string[] {
       const wrappedDescs = wrapText(hotkey.description, descCol);
 
       for (let i = 0; i < wrappedDescs.length; i++) {
+        const desc = wrappedDescs[i] ?? "";
         if (i === 0) {
-          lines.push(formattedKeys + padRight(wrappedDescs[i], descCol));
+          lines.push(formattedKeys + padRight(desc, descCol));
         } else {
-          lines.push(padRight("", keysCol) + padRight(wrappedDescs[i], descCol));
+          lines.push(padRight("", keysCol) + padRight(desc, descCol));
         }
       }
     }
@@ -129,7 +130,7 @@ async function generateText(
   // Create header
   const headerLines: string[] = [];
   headerLines.push("═".repeat(LINE_WIDTH));
-  headerLines.push(padRight(metadata.title, LINE_WIDTH));
+  headerLines.push(padRight(metadata.title ?? "Cheatsheet", LINE_WIDTH));
   headerLines.push("═".repeat(LINE_WIDTH));
 
   let currentText = headerLines.join("\n") + "\n";
@@ -147,7 +148,7 @@ async function generateText(
 
       const contHeaderLines = [
         "═".repeat(LINE_WIDTH),
-        padRight(metadata.title + " (continued)", LINE_WIDTH),
+        padRight((metadata.title ?? "Cheatsheet") + " (continued)", LINE_WIDTH),
         "═".repeat(LINE_WIDTH),
         ""
       ];
@@ -205,7 +206,7 @@ function renderTextToCanvas(lines: string[]): { buffer: Buffer; height: number }
 
   // Render each line
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+    const line = lines[i] ?? "";
     const y = PADDING + i * CHAR_HEIGHT;
     ctx.fillText(line, PADDING, y);
   }
@@ -217,9 +218,9 @@ function renderTextToCanvas(lines: string[]): { buffer: Buffer; height: number }
   // Apply threshold to convert to pure black and white (1-bit)
   // Any pixel with luminance > 127.5 becomes white (255), else black (0)
   for (let i = 0; i < data.length; i += 4) {
-    const r = data[i];
-    const g = data[i + 1];
-    const b = data[i + 2];
+    const r = (data[i] ?? 0) as number;
+    const g = (data[i + 1] ?? 0) as number;
+    const b = (data[i + 2] ?? 0) as number;
 
     // Calculate luminance using standard formula
     const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
@@ -275,16 +276,22 @@ async function main() {
 
       if (textCount === 1) {
         const outputPath = join(outputDir, `${baseName}.txt`);
-        await writeFile(outputPath, textFiles[0].content, "utf-8");
-        console.log(`  ✓ Text: ${outputPath} (${textFiles[0].lineCount} lines)`);
+        const file0 = textFiles[0];
+        if (file0) {
+          await writeFile(outputPath, file0.content, "utf-8");
+          console.log(`  ✓ Text: ${outputPath} (${file0.lineCount} lines)`);
+        }
       } else {
         for (let i = 0; i < textFiles.length; i++) {
           const fileNum = i + 1;
           const outputPath = join(outputDir, `${baseName}_part${fileNum}.txt`);
-          await writeFile(outputPath, textFiles[i].content, "utf-8");
-          console.log(
-            `  ✓ Text: ${outputPath} (${textFiles[i].lineCount} lines)`
-          );
+          const fileI = textFiles[i];
+          if (fileI) {
+            await writeFile(outputPath, fileI.content, "utf-8");
+            console.log(
+              `  ✓ Text: ${outputPath} (${fileI.lineCount} lines)`
+            );
+          }
         }
       }
 
