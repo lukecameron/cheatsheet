@@ -11,15 +11,27 @@ interface TextFile {
 // Constants optimized for thermal printer (384px width)
 const PRINTER_WIDTH = 384;
 const PADDING = 8;
-const CHAR_WIDTH = 11.5; // Liberation Mono at 12px renders ~11.5px per char
-const CHAR_HEIGHT = 16; // Monospace line height (12px font + spacing)
 const FONT_FAMILY = "Liberation Mono";
-const FONT_SIZE = "12px";
-const DPI = 200; // Thermal printer typical resolution
+const LINE_WIDTH = 35; // Must match generate-markdown.ts LINE_WIDTH
 
-// Calculate how many characters fit per line at this width
+// Monospace font width ratio: character width is typically 60-65% of font size
+// For Liberation Mono at rendering size, we use 0.625 (5/8) as a reliable ratio
+const CHAR_WIDTH_TO_FONT_RATIO = 0.625;
+
+// Calculate usable width and derive font size
 const USABLE_WIDTH = PRINTER_WIDTH - PADDING * 2;
-const MAX_CHARS_PER_LINE = Math.floor(USABLE_WIDTH / CHAR_WIDTH);
+const DESIRED_CHAR_WIDTH = USABLE_WIDTH / LINE_WIDTH;
+const FONT_SIZE_PX = Math.round(DESIRED_CHAR_WIDTH / CHAR_WIDTH_TO_FONT_RATIO);
+const FONT_SIZE = `${FONT_SIZE_PX}px`;
+
+// Line height is typically 1.3x the font size for comfortable spacing
+const CHAR_HEIGHT = Math.ceil(FONT_SIZE_PX * 1.3);
+
+console.log(`Calculated font size: ${FONT_SIZE} (width: ${DESIRED_CHAR_WIDTH.toFixed(2)}px per char)`);
+
+// Calculate actual character width for validation
+const ACTUAL_CHAR_WIDTH = (USABLE_WIDTH / LINE_WIDTH);
+const MAX_CHARS_PER_LINE = LINE_WIDTH;
 
 function renderTextToCanvas(lines: string[]): { buffer: Buffer; height: number } {
   // Calculate canvas dimensions
