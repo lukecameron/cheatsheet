@@ -1,64 +1,58 @@
-# cheatsheet
+# Cheatsheet
 
-This project uses [Mise](https://mise.jdx.dev/) for managing tools and [Bun](https://bun.com) as the JavaScript runtime.
+Generate printer-optimized text and PNG files from keyboard shortcut reference data.
 
-## Quick start
+This tool converts TOML hotkey data into:
+- **Text files** (monospace, 35 chars/line, 17px font) for direct reading
+- **PNG images** (384px × variable height) optimized for thermal printer output (MXW01)
 
-### Running tasks
+Perfect for creating physical reference cards and cheatsheets.
 
-Run defined tasks with:
+## Setup
 
-```bash
-mise run dev
-```
-
-This automatically installs tools and runs the script with correct versions.
-
-### Using `mise exec` (for ad-hoc commands)
-
-Run commands with the correct tool versions without permanently modifying your shell:
-
-```bash
-mise exec -- bun run index.ts
-```
-
-### Using `mise activate` (recommended for interactive shells)
-
-For a persistent shell session with all tools loaded:
-
-```bash
-eval "$(mise activate bash)"  # or zsh/fish
-bun run index.ts
-```
-
-See [mise activation guide](https://mise.jdx.dev/cli/activate.html) for your shell.
-
-## Managing tools
-
-Tools are defined in `.mise.toml`. Install them with:
+Install tools:
 
 ```bash
 mise install
 ```
 
-To add a new tool, use:
+## Usage
+
+Generate all cheatsheets from TOML data in `data/hotkeys/`:
 
 ```bash
-mise use bun@latest
+mise run generate
 ```
 
-## Defining tasks
+This creates:
+- `cheatsheets/*.txt` - Monospace text files
+- `cheatsheets/*.png` - PNG images for printing
 
-Tasks are defined in `.mise.toml` under `[tasks.taskname]`:
+## Data Format
+
+Create a TOML file in `data/hotkeys/` with this structure:
 
 ```toml
-[tasks.dev]
-description = "Start the development script"
-run = "bun run index.ts"
+[metadata]
+title = "App Name"
+
+[[sections]]
+name = "Section Title"
+note = "Optional note about this section"
+hotkeys = [
+  { keys = "Super + Space", description = "Action description" },
+  { keys = "Ctrl + Alt + X", description = "Another action" },
+]
 ```
 
-Run with `mise run dev`. Tasks automatically load all tools before executing.
+## Output
 
-## Project info
+For content > 60 lines, output is split across multiple files:
+- Single section: `name.txt` and `name.png`
+- Multiple sections: `name_part1.txt`, `name_part2.txt`, etc.
 
-Created with `bun init` in bun v1.3.5. Managed by Mise v2025.11.3.
+The generator automatically:
+- Abbreviates key names (Super→S, Ctrl→C, Alt→A, Shift→Sh)
+- Wraps long descriptions
+- Fills the full 384px width with properly sized fonts
+- Applies 1-bit threshold for crisp printing
