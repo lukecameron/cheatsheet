@@ -3,3 +3,7 @@
 [tools]
 bun = "latest"
 node = "latest"
+
+[tasks.dev]
+description = "Start the development script"
+run = "bun run index.ts"

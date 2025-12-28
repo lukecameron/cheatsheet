@@ -4,7 +4,17 @@ This project uses [Mise](https://mise.jdx.dev/) for managing tools and [Bun](htt
 
 ## Quick start
 
-### Using `mise exec` (single command)
+### Running tasks
+
+Run defined tasks with:
+
+```bash
+mise run dev
+```
+
+This automatically installs tools and runs the script with correct versions.
+
+### Using `mise exec` (for ad-hoc commands)
 
 Run commands with the correct tool versions without permanently modifying your shell:
 
@@ -37,19 +47,17 @@ To add a new tool, use:
 mise use bun@latest
 ```
 
-## Running scripts
+## Defining tasks
 
-Once activated, run scripts directly:
+Tasks are defined in `.mise.toml` under `[tasks.taskname]`:
 
-```bash
-bun run index.ts
+```toml
+[tasks.dev]
+description = "Start the development script"
+run = "bun run index.ts"
 ```
 
-Or use `mise exec` for one-off commands:
-
-```bash
-mise exec -- bun run index.ts
-```
+Run with `mise run dev`. Tasks automatically load all tools before executing.
 
 ## Project info
 
