@@ -1,0 +1,5 @@
+[env]
+
+[tools]
+bun = "latest"
+node = "latest"
