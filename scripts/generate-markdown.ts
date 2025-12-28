@@ -18,44 +18,82 @@ interface CheatsheetData {
   sections: Section[];
 }
 
-async function generateMarkdown(tomlPath: string): Promise<string> {
+interface MarkdownFile {
+  content: string;
+  lineCount: number;
+}
+
+function countLines(text: string): number {
+  return text.split("\n").length;
+}
+
+function generateSectionMarkdown(section: Section): string {
+  let markdown = `## ${section.name}\n\n`;
+
+  if (section.note) {
+    markdown += `> ${section.note}\n\n`;
+  }
+
+  if (section.hotkeys && section.hotkeys.length > 0) {
+    markdown += `| Hotkey | Function |\n`;
+    markdown += `| --- | --- |\n`;
+
+    for (const hotkey of section.hotkeys) {
+      // Format the keys with backticks for monospace
+      const formattedKeys = hotkey.keys
+        .split(" / ")
+        .map((k) => `\`${k.trim()}\``)
+        .join(" / ");
+
+      markdown += `| ${formattedKeys} | ${hotkey.description} |\n`;
+    }
+  }
+
+  markdown += `\n`;
+  return markdown;
+}
+
+async function generateMarkdown(
+  tomlPath: string
+): Promise<{ files: MarkdownFile[]; count: number }> {
   const content = await readFile(tomlPath, "utf-8");
   const data = parse(content) as CheatsheetData;
 
   const { metadata, sections } = data;
 
-  let markdown = `# ${metadata.title}\n\n`;
+  const MAX_LINES = 60;
+  const files: MarkdownFile[] = [];
+
+  let currentMarkdown = `# ${metadata.title}\n\n`;
 
   if (metadata.url) {
-    markdown += `> [Source](${metadata.url})\n\n`;
+    currentMarkdown += `> [Source](${metadata.url})\n\n`;
   }
+
+  let currentLineCount = countLines(currentMarkdown);
 
   for (const section of sections) {
-    markdown += `## ${section.name}\n\n`;
+    const sectionMarkdown = generateSectionMarkdown(section);
+    const sectionLineCount = countLines(sectionMarkdown);
 
-    if (section.note) {
-      markdown += `> ${section.note}\n\n`;
+    // Check if adding this section would exceed the limit
+    if (currentLineCount + sectionLineCount > MAX_LINES && currentLineCount > 10) {
+      // Save current file and start a new one
+      files.push({ content: currentMarkdown, lineCount: currentLineCount });
+      currentMarkdown = `# ${metadata.title} (continued)\n\n`;
+      currentLineCount = countLines(currentMarkdown);
     }
 
-    if (section.hotkeys && section.hotkeys.length > 0) {
-      markdown += `| Hotkey | Function |\n`;
-      markdown += `| --- | --- |\n`;
-
-      for (const hotkey of section.hotkeys) {
-        // Format the keys with backticks for monospace
-        const formattedKeys = hotkey.keys
-          .split(" / ")
-          .map((k) => `\`${k.trim()}\``)
-          .join(" / ");
-
-        markdown += `| ${formattedKeys} | ${hotkey.description} |\n`;
-      }
-    }
-
-    markdown += `\n`;
+    currentMarkdown += sectionMarkdown;
+    currentLineCount += sectionLineCount;
   }
 
-  return markdown;
+  // Add the last file
+  if (currentMarkdown.trim().length > 0) {
+    files.push({ content: currentMarkdown, lineCount: currentLineCount });
+  }
+
+  return { files, count: files.length };
 }
 
 async function main() {
@@ -74,12 +112,22 @@ async function main() {
   for (const file of tomlFiles) {
     const tomlPath = join(dataDir, file);
     const baseName = basename(file, ".toml");
-    const outputPath = join(outputDir, `${baseName}.md`);
 
     try {
-      const markdown = await generateMarkdown(tomlPath);
-      await writeFile(outputPath, markdown, "utf-8");
-      console.log(`✓ Generated: ${outputPath}`);
+      const { files: markdownFiles, count } = await generateMarkdown(tomlPath);
+      
+      if (count === 1) {
+        const outputPath = join(outputDir, `${baseName}.md`);
+        await writeFile(outputPath, markdownFiles[0].content, "utf-8");
+        console.log(`✓ Generated: ${outputPath} (${markdownFiles[0].lineCount} lines)`);
+      } else {
+        for (let i = 0; i < markdownFiles.length; i++) {
+          const fileNum = i + 1;
+          const outputPath = join(outputDir, `${baseName}_part${fileNum}.md`);
+          await writeFile(outputPath, markdownFiles[i].content, "utf-8");
+          console.log(`✓ Generated: ${outputPath} (${markdownFiles[i].lineCount} lines)`);
+        }
+      }
     } catch (error) {
       console.error(`✗ Error processing ${file}:`, error);
     }

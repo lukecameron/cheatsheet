@@ -270,7 +270,7 @@ async function main() {
 
     try {
       const height = await generateCheatsheetPNG(tomlPath, outputPath);
-      console.log(`✓ Generated: ${outputPath} (${PRINTER_WIDTH}x${height})`);
+      console.log(`✓ Generated: ${outputPath} (${PRINTER_WIDTH}x${Math.round(height)})`);
     } catch (error) {
       console.error(`✗ Error processing ${file}:`, error);
     }
