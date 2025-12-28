@@ -9,13 +9,9 @@ description = "Start the development script"
 run = "bun run index.ts"
 
 [tasks.generate]
-description = "Generate markdown cheatsheets from TOML data"
-run = "bun run scripts/generate-markdown.ts"
-
-[tasks.generate-png]
-description = "Generate PNG cheatsheets from TOML data (MXW01 printer format)"
-run = "bun run scripts/generate-png.ts"
+description = "Generate all cheatsheets (text and PNG) from TOML data"
+run = "bun run scripts/generate.ts"
 
 [tasks.build]
-description = "Generate all cheatsheets (markdown and PNG)"
-run = ["mise run generate", "mise run generate-png"]
+description = "Generate all cheatsheets"
+run = "mise run generate"

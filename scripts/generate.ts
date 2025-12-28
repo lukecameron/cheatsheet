@@ -1,6 +1,11 @@
 import { readdir, readFile, writeFile, mkdir } from "fs/promises";
 import { extname, basename, join } from "path";
 import { parse } from "toml";
+import { createCanvas } from "canvas";
+
+// ============================================================================
+// Type Definitions
+// ============================================================================
 
 interface Hotkey {
   keys: string;
@@ -23,8 +28,12 @@ interface TextFile {
   lineCount: number;
 }
 
+// ============================================================================
+// Text Generation Configuration
+// ============================================================================
+
 // For monospace fonts at 384px width with larger pixels
-// Using 35 chars for comfortable spacing with 11-12px font
+// Using 35 chars for comfortable spacing with derived font size
 const LINE_WIDTH = 35;
 const MAX_LINES = 60;
 
@@ -44,14 +53,6 @@ function abbreviateKeys(keys: string): string {
 
 function padRight(text: string, width: number): string {
   return text.padEnd(width, " ");
-}
-
-function formatLine(text: string, width: number): string {
-  if (text.length <= width) {
-    return padRight(text, width);
-  }
-  // Truncate with ellipsis if too long
-  return text.substring(0, width - 3) + "...";
 }
 
 function wrapText(text: string, width: number): string[] {
@@ -94,14 +95,14 @@ function generateSectionText(section: Section): string[] {
 
     for (const hotkey of section.hotkeys) {
       const abbreviatedKeys = abbreviateKeys(hotkey.keys);
-      
+
       // Calculate column positions: keys take 13 chars, description takes the rest
       const keysCol = 13;
       const descCol = LINE_WIDTH - keysCol;
-      
+
       const formattedKeys = padRight(abbreviatedKeys, keysCol);
       const wrappedDescs = wrapText(hotkey.description, descCol);
-      
+
       for (let i = 0; i < wrappedDescs.length; i++) {
         if (i === 0) {
           lines.push(formattedKeys + padRight(wrappedDescs[i], descCol));
@@ -143,7 +144,7 @@ async function generateText(
     if (currentLineCount + sectionLineCount > MAX_LINES && currentLineCount > 10) {
       // Save current file and start a new one
       files.push({ content: currentText, lineCount: currentLineCount });
-      
+
       const contHeaderLines = [
         "═".repeat(LINE_WIDTH),
         padRight(metadata.title + " (continued)", LINE_WIDTH),
@@ -166,6 +167,86 @@ async function generateText(
   return { files, count: files.length };
 }
 
+// ============================================================================
+// PNG Generation Configuration
+// ============================================================================
+
+const PRINTER_WIDTH = 384;
+const PADDING = 8;
+const FONT_FAMILY = "Liberation Mono";
+
+// Monospace font width ratio: character width is typically 60-65% of font size
+// For Liberation Mono at rendering size, we use 0.625 (5/8) as a reliable ratio
+const CHAR_WIDTH_TO_FONT_RATIO = 0.625;
+
+// Calculate usable width and derive font size
+const USABLE_WIDTH = PRINTER_WIDTH - PADDING * 2;
+const DESIRED_CHAR_WIDTH = USABLE_WIDTH / LINE_WIDTH;
+const FONT_SIZE_PX = Math.round(DESIRED_CHAR_WIDTH / CHAR_WIDTH_TO_FONT_RATIO);
+const FONT_SIZE = `${FONT_SIZE_PX}px`;
+
+// Line height is typically 1.3x the font size for comfortable spacing
+const CHAR_HEIGHT = Math.ceil(FONT_SIZE_PX * 1.3);
+
+function renderTextToCanvas(lines: string[]): { buffer: Buffer; height: number } {
+  // Calculate canvas dimensions
+  const height = PADDING * 2 + lines.length * CHAR_HEIGHT;
+  const canvas = createCanvas(PRINTER_WIDTH, height);
+  const ctx = canvas.getContext("2d");
+
+  // White background
+  ctx.fillStyle = "#FFFFFF";
+  ctx.fillRect(0, 0, PRINTER_WIDTH, height);
+
+  // Black text
+  ctx.fillStyle = "#000000";
+  ctx.font = `${FONT_SIZE} ${FONT_FAMILY}`;
+  ctx.textBaseline = "top";
+
+  // Render each line
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const y = PADDING + i * CHAR_HEIGHT;
+    ctx.fillText(line, PADDING, y);
+  }
+
+  // Get image data and apply 1-bit threshold
+  const imageData = ctx.getImageData(0, 0, PRINTER_WIDTH, height);
+  const data = imageData.data;
+
+  // Apply threshold to convert to pure black and white (1-bit)
+  // Any pixel with luminance > 127.5 becomes white (255), else black (0)
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+
+    // Calculate luminance using standard formula
+    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+
+    // Threshold: > 127.5 = white (255), else black (0)
+    const bw = luminance > 127.5 ? 255 : 0;
+    data[i] = bw;
+    data[i + 1] = bw;
+    data[i + 2] = bw;
+    data[i + 3] = 255; // Alpha = opaque
+  }
+
+  // Create a new canvas with the thresholded image data
+  const bwCanvas = createCanvas(PRINTER_WIDTH, height);
+  const bwCtx = bwCanvas.getContext("2d");
+  bwCtx.putImageData(imageData, 0, 0);
+
+  // Save as PNG (canvas outputs 8-bit, but our image is pure B&W)
+  const buffer = bwCanvas.toBuffer("image/png");
+
+  return { buffer, height };
+}
+
+// ============================================================================
+// Main Pipeline
+// ============================================================================
+
 async function main() {
   const dataDir = "./data/hotkeys";
   const outputDir = "./cheatsheets";
@@ -178,25 +259,52 @@ async function main() {
   const tomlFiles = files.filter((f) => extname(f) === ".toml");
 
   console.log(`Found ${tomlFiles.length} TOML file(s)`);
+  console.log(
+    `Using font size: ${FONT_SIZE} (${DESIRED_CHAR_WIDTH.toFixed(2)}px per char, ${LINE_WIDTH} chars per line)`
+  );
 
   for (const file of tomlFiles) {
     const tomlPath = join(dataDir, file);
     const baseName = basename(file, ".toml");
 
     try {
-      const { files: textFiles, count } = await generateText(tomlPath);
-      
-      if (count === 1) {
+      // Generate text files
+      const { files: textFiles, count: textCount } = await generateText(tomlPath);
+
+      console.log(`\nProcessing ${baseName}:`);
+
+      if (textCount === 1) {
         const outputPath = join(outputDir, `${baseName}.txt`);
         await writeFile(outputPath, textFiles[0].content, "utf-8");
-        console.log(`✓ Generated: ${outputPath} (${textFiles[0].lineCount} lines)`);
+        console.log(`  ✓ Text: ${outputPath} (${textFiles[0].lineCount} lines)`);
       } else {
         for (let i = 0; i < textFiles.length; i++) {
           const fileNum = i + 1;
           const outputPath = join(outputDir, `${baseName}_part${fileNum}.txt`);
           await writeFile(outputPath, textFiles[i].content, "utf-8");
-          console.log(`✓ Generated: ${outputPath} (${textFiles[i].lineCount} lines)`);
+          console.log(
+            `  ✓ Text: ${outputPath} (${textFiles[i].lineCount} lines)`
+          );
         }
+      }
+
+      // Generate PNG files from text files
+      const generatedTxtFiles = await readdir(outputDir);
+      const relatedTxtFiles = generatedTxtFiles.filter(
+        (f) => f.startsWith(baseName) && extname(f) === ".txt"
+      );
+
+      for (const txtFile of relatedTxtFiles) {
+        const txtPath = join(outputDir, txtFile);
+        const content = await readFile(txtPath, "utf-8");
+        const lines = content.split("\n");
+
+        const { buffer, height } = renderTextToCanvas(lines);
+
+        const pngBaseName = basename(txtFile, ".txt");
+        const outputPath = join(outputDir, `${pngBaseName}.png`);
+        await writeFile(outputPath, buffer);
+        console.log(`  ✓ PNG: ${outputPath} (${PRINTER_WIDTH}x${height}px)`);
       }
     } catch (error) {
       console.error(`✗ Error processing ${file}:`, error);
