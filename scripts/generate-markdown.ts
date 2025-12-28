@@ -18,10 +18,15 @@ interface CheatsheetData {
   sections: Section[];
 }
 
-interface MarkdownFile {
+interface TextFile {
   content: string;
   lineCount: number;
 }
+
+// For monospace fonts at 384px width, approximately 51-54 characters fit
+// Using 50 chars for safety with Liberation Mono
+const LINE_WIDTH = 50;
+const MAX_LINES = 60;
 
 function countLines(text: string): number {
   return text.split("\n").length;
@@ -37,68 +42,130 @@ function abbreviateKeys(keys: string): string {
     .replace(/\s+/g, "");
 }
 
-function generateSectionMarkdown(section: Section): string {
-  let markdown = `## ${section.name}\n\n`;
+function padRight(text: string, width: number): string {
+  return text.padEnd(width, " ");
+}
 
+function formatLine(text: string, width: number): string {
+  if (text.length <= width) {
+    return padRight(text, width);
+  }
+  // Truncate with ellipsis if too long
+  return text.substring(0, width - 3) + "...";
+}
+
+function wrapText(text: string, width: number): string[] {
+  const words = text.split(" ");
+  const lines: string[] = [];
+  let currentLine = "";
+
+  for (const word of words) {
+    if (currentLine.length + word.length + 1 <= width) {
+      currentLine += (currentLine ? " " : "") + word;
+    } else {
+      if (currentLine) lines.push(currentLine);
+      currentLine = word;
+    }
+  }
+  if (currentLine) lines.push(currentLine);
+
+  return lines;
+}
+
+function generateSectionText(section: Section): string[] {
+  const lines: string[] = [];
+
+  // Section header
+  lines.push("");
+  lines.push("─".repeat(LINE_WIDTH));
+  lines.push(padRight(section.name, LINE_WIDTH));
+  lines.push("─".repeat(LINE_WIDTH));
+
+  // Section note
   if (section.note) {
-    markdown += `> ${section.note}\n\n`;
+    lines.push("");
+    const wrappedNote = wrapText(section.note, LINE_WIDTH);
+    lines.push(...wrappedNote);
   }
 
+  // Hotkeys table
   if (section.hotkeys && section.hotkeys.length > 0) {
-    markdown += `| Hotkey | Function |\n`;
-    markdown += `| --- | --- |\n`;
+    lines.push("");
 
     for (const hotkey of section.hotkeys) {
-      // Use abbreviated keys for consistency
       const abbreviatedKeys = abbreviateKeys(hotkey.keys);
-      const formattedKeys = `\`${abbreviatedKeys}\``;
-
-      markdown += `| ${formattedKeys} | ${hotkey.description} |\n`;
+      
+      // Calculate column positions: keys take 18 chars, description takes the rest
+      const keysCol = 18;
+      const descCol = LINE_WIDTH - keysCol;
+      
+      const formattedKeys = padRight(abbreviatedKeys, keysCol);
+      const wrappedDescs = wrapText(hotkey.description, descCol);
+      
+      for (let i = 0; i < wrappedDescs.length; i++) {
+        if (i === 0) {
+          lines.push(formattedKeys + padRight(wrappedDescs[i], descCol));
+        } else {
+          lines.push(padRight("", keysCol) + padRight(wrappedDescs[i], descCol));
+        }
+      }
     }
   }
 
-  markdown += `\n`;
-  return markdown;
+  return lines;
 }
 
-async function generateMarkdown(
+async function generateText(
   tomlPath: string
-): Promise<{ files: MarkdownFile[]; count: number }> {
+): Promise<{ files: TextFile[]; count: number }> {
   const content = await readFile(tomlPath, "utf-8");
   const data = parse(content) as CheatsheetData;
 
   const { metadata, sections } = data;
 
-  const MAX_LINES = 60;
-  const files: MarkdownFile[] = [];
+  const files: TextFile[] = [];
 
-  let currentMarkdown = `# ${metadata.title}\n\n`;
+  // Create header
+  const headerLines: string[] = [];
+  headerLines.push("═".repeat(LINE_WIDTH));
+  headerLines.push(padRight(metadata.title, LINE_WIDTH));
+  headerLines.push("═".repeat(LINE_WIDTH));
 
   if (metadata.url) {
-    currentMarkdown += `> [Source](${metadata.url})\n\n`;
+    headerLines.push("");
+    headerLines.push("Source: " + metadata.url);
   }
 
-  let currentLineCount = countLines(currentMarkdown);
+  let currentText = headerLines.join("\n") + "\n";
+  let currentLineCount = countLines(currentText);
 
   for (const section of sections) {
-    const sectionMarkdown = generateSectionMarkdown(section);
-    const sectionLineCount = countLines(sectionMarkdown);
+    const sectionLines = generateSectionText(section);
+    const sectionText = sectionLines.join("\n") + "\n";
+    const sectionLineCount = countLines(sectionText);
 
     // Check if adding this section would exceed the limit
     if (currentLineCount + sectionLineCount > MAX_LINES && currentLineCount > 10) {
       // Save current file and start a new one
-      files.push({ content: currentMarkdown, lineCount: currentLineCount });
-      currentMarkdown = `# ${metadata.title} (continued)\n\n`;
-      currentLineCount = countLines(currentMarkdown);
+      files.push({ content: currentText, lineCount: currentLineCount });
+      
+      const contHeaderLines = [
+        "═".repeat(LINE_WIDTH),
+        padRight(metadata.title + " (continued)", LINE_WIDTH),
+        "═".repeat(LINE_WIDTH),
+        ""
+      ];
+      currentText = contHeaderLines.join("\n");
+      currentLineCount = countLines(currentText);
     }
 
-    currentMarkdown += sectionMarkdown;
+    currentText += sectionText;
     currentLineCount += sectionLineCount;
   }
 
   // Add the last file
-  if (currentMarkdown.trim().length > 0) {
-    files.push({ content: currentMarkdown, lineCount: currentLineCount });
+  if (currentText.trim().length > 0) {
+    files.push({ content: currentText, lineCount: currentLineCount });
   }
 
   return { files, count: files.length };
@@ -122,18 +189,18 @@ async function main() {
     const baseName = basename(file, ".toml");
 
     try {
-      const { files: markdownFiles, count } = await generateMarkdown(tomlPath);
+      const { files: textFiles, count } = await generateText(tomlPath);
       
       if (count === 1) {
-        const outputPath = join(outputDir, `${baseName}.md`);
-        await writeFile(outputPath, markdownFiles[0].content, "utf-8");
-        console.log(`✓ Generated: ${outputPath} (${markdownFiles[0].lineCount} lines)`);
+        const outputPath = join(outputDir, `${baseName}.txt`);
+        await writeFile(outputPath, textFiles[0].content, "utf-8");
+        console.log(`✓ Generated: ${outputPath} (${textFiles[0].lineCount} lines)`);
       } else {
-        for (let i = 0; i < markdownFiles.length; i++) {
+        for (let i = 0; i < textFiles.length; i++) {
           const fileNum = i + 1;
-          const outputPath = join(outputDir, `${baseName}_part${fileNum}.md`);
-          await writeFile(outputPath, markdownFiles[i].content, "utf-8");
-          console.log(`✓ Generated: ${outputPath} (${markdownFiles[i].lineCount} lines)`);
+          const outputPath = join(outputDir, `${baseName}_part${fileNum}.txt`);
+          await writeFile(outputPath, textFiles[i].content, "utf-8");
+          console.log(`✓ Generated: ${outputPath} (${textFiles[i].lineCount} lines)`);
         }
       }
     } catch (error) {
