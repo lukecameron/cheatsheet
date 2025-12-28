@@ -4,10 +4,6 @@
 bun = "latest"
 node = "latest"
 
-[tasks.dev]
-description = "Start the development script"
-run = "bun run index.ts"
-
 [tasks.generate]
 description = "Generate all cheatsheets (text and PNG) from TOML data"
 run = "bun run scripts/generate.ts"
