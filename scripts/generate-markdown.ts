@@ -27,6 +27,16 @@ function countLines(text: string): number {
   return text.split("\n").length;
 }
 
+function abbreviateKeys(keys: string): string {
+  return keys
+    .replace(/Super\s*\+\s*/g, "S-")
+    .replace(/Ctrl\s*\+\s*/g, "C-")
+    .replace(/Alt\s*\+\s*/g, "A-")
+    .replace(/Shift\s*\+\s*/g, "Sh-")
+    .replace(/CapsLock\s*\+\s*/g, "CL-")
+    .replace(/\s+/g, "");
+}
+
 function generateSectionMarkdown(section: Section): string {
   let markdown = `## ${section.name}\n\n`;
 
@@ -39,11 +49,9 @@ function generateSectionMarkdown(section: Section): string {
     markdown += `| --- | --- |\n`;
 
     for (const hotkey of section.hotkeys) {
-      // Format the keys with backticks for monospace
-      const formattedKeys = hotkey.keys
-        .split(" / ")
-        .map((k) => `\`${k.trim()}\``)
-        .join(" / ");
+      // Use abbreviated keys for consistency
+      const abbreviatedKeys = abbreviateKeys(hotkey.keys);
+      const formattedKeys = `\`${abbreviatedKeys}\``;
 
       markdown += `| ${formattedKeys} | ${hotkey.description} |\n`;
     }

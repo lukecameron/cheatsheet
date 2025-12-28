@@ -6,24 +6,24 @@
 
 | Hotkey | Function |
 | --- | --- |
-| `Super + Return` | Terminal |
-| `Super + Shift + B` | Browser |
-| `Super + Shift + Alt + B` | Browser (private/incognito) |
-| `Super + Shift + F` | File manager |
-| `Super + Shift + T` | Activity (btop) |
-| `Super + Shift + M` | Music (Spotify) |
-| `Super + Shift + /` | Password manager (1password) |
-| `Super + Shift + N` | Neovim |
-| `Super + Shift + C` | Calendar (HEY) |
-| `Super + Shift + E` | Email (HEY) |
-| `Super + Shift + A` | AI (ChatGPT) |
-| `Super + Shift + G` | Messenger (Signal) |
-| `Super + Shift + Ctrl + G` | Messenger (WhatsApp) |
-| `Super + Shift + Alt + G` | Messenger (Google) |
-| `Super + Shift + D` | Docker (LazyDocker) |
-| `Super + Shift + O` | Obsidian |
-| `Super + Shift + X` | X |
-| `Super + Ctrl + S` | Share menu (via LocalSend) |
+| `S-Return` | Terminal |
+| `S-Sh-B` | Browser |
+| `S-Sh-A-B` | Browser (private/incognito) |
+| `S-Sh-F` | File manager |
+| `S-Sh-T` | Activity (btop) |
+| `S-Sh-M` | Music (Spotify) |
+| `S-Sh-/` | Password manager (1password) |
+| `S-Sh-N` | Neovim |
+| `S-Sh-C` | Calendar (HEY) |
+| `S-Sh-E` | Email (HEY) |
+| `S-Sh-A` | AI (ChatGPT) |
+| `S-Sh-G` | Messenger (Signal) |
+| `S-Sh-C-G` | Messenger (WhatsApp) |
+| `S-Sh-A-G` | Messenger (Google) |
+| `S-Sh-D` | Docker (LazyDocker) |
+| `S-Sh-O` | Obsidian |
+| `S-Sh-X` | X |
+| `S-C-S` | Share menu (via LocalSend) |
 
 ## Universal clipboard
 
@@ -31,10 +31,10 @@
 
 | Hotkey | Function |
 | --- | --- |
-| `Super + C` | Copy |
-| `Super + X` | Cut (not in terminal) |
-| `Super + V` | Paste |
-| `Super + Ctrl + V` | Clipboard manager |
+| `S-C` | Copy |
+| `S-X` | Cut (not in terminal) |
+| `S-V` | Paste |
+| `S-C-V` | Clipboard manager |
 
 ## Capture
 
@@ -42,9 +42,9 @@
 
 | Hotkey | Function |
 | --- | --- |
-| `Print Screen` | Screenshot with editing |
-| `Shift + Print Screen` | Screenshot straight to clipboard |
-| `Alt + Print Screen` | Screenrecord |
-| `Super + Print Screen` | Color picker |
-| `Alt + Shift + L` | Copy current URL from webapp or Chromium |
+| `PrintScreen` | Screenshot with editing |
+| `Sh-PrintScreen` | Screenshot straight to clipboard |
+| `A-PrintScreen` | Screenrecord |
+| `S-PrintScreen` | Color picker |
+| `A-Sh-L` | Copy current URL from webapp or Chromium |
 

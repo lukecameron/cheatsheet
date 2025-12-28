@@ -30,14 +30,24 @@ interface PNGFile {
 // Constants from MXW01_READABILITY_GUIDE
 const PRINTER_WIDTH = 384;
 const PADDING = 16;
-const FONT_SIZE_TITLE = 20;
-const FONT_SIZE_HEADING = 16;
-const FONT_SIZE_TEXT = 13;
-const FONT_SIZE_KEYS = 12;
+const FONT_SIZE_TITLE = 22;
+const FONT_SIZE_HEADING = 18;
+const FONT_SIZE_TEXT = 15;
+const FONT_SIZE_KEYS = 14;
 const FONT_FAMILY = "Arial";
-const LINE_HEIGHT = 1.3;
-const COL_SPACING = 8;
+const LINE_HEIGHT = 1.4;
+const COL_SPACING = 12;
 const MAX_LINES = 60;
+
+function abbreviateKeys(keys: string): string {
+  return keys
+    .replace(/Super\s*\+\s*/g, "S-")
+    .replace(/Ctrl\s*\+\s*/g, "C-")
+    .replace(/Alt\s*\+\s*/g, "A-")
+    .replace(/Shift\s*\+\s*/g, "Sh-")
+    .replace(/CapsLock\s*\+\s*/g, "CL-")
+    .replace(/\s+/g, "");
+}
 
 interface TextMetrics {
   width: number;
@@ -99,8 +109,9 @@ function countLines(sections: Section[], includeHeader: boolean = true): number 
       count += 2; // Note + blank
     }
     if (section.hotkeys && section.hotkeys.length > 0) {
-      count += 2; // Table header + separator
-      count += section.hotkeys.length; // Rows
+      count += 2; // Table header + blank
+      // Abbreviated keys are shorter, so count as fewer lines
+      count += Math.ceil(section.hotkeys.length * 0.8);
       count += 1; // Blank after table
     }
   }
@@ -260,9 +271,10 @@ async function generatePNGForSections(
 
       // Data rows
       for (const hotkey of section.hotkeys) {
+        const abbreviatedKeys = abbreviateKeys(hotkey.keys);
         const keyLines = wrapText(
           renderCtx,
-          hotkey.keys,
+          abbreviatedKeys,
           keyColWidth,
           FONT_SIZE_KEYS
         );
