@@ -131,11 +131,6 @@ async function generateText(
   headerLines.push(padRight(metadata.title, LINE_WIDTH));
   headerLines.push("═".repeat(LINE_WIDTH));
 
-  if (metadata.url) {
-    headerLines.push("");
-    headerLines.push("Source: " + metadata.url);
-  }
-
   let currentText = headerLines.join("\n") + "\n";
   let currentLineCount = countLines(currentText);
 

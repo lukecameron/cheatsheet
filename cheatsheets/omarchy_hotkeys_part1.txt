@@ -2,8 +2,6 @@
 Omarchy Hotkeys                    
 ═══════════════════════════════════
 
-Source: https://learn.omacom.io/2/the-omarchy-manual/53/hotkeys
-
 ───────────────────────────────────
 Navigating                         
 ───────────────────────────────────
