@@ -1,0 +1,209 @@
+# Omarchy Hotkeys Cheatsheet
+# Source: https://learn.omacom.io/2/the-omarchy-manual/53/hotkeys
+
+[metadata]
+title = "Omarchy Hotkeys"
+url = "https://learn.omacom.io/2/the-omarchy-manual/53/hotkeys"
+system = "omarchy"
+last_updated = "2025-12-28"
+
+[[sections]]
+name = "Navigating"
+hotkeys = [
+  { keys = "Super + Space", description = "Application launcher" },
+  { keys = "Super + Alt + Space", description = "Omarchy control menu" },
+  { keys = "Super + Escape", description = "Lock, suspend, relaunch, restart, shutdown computer" },
+  { keys = "Super + W", description = "Close window" },
+  { keys = "Ctrl + Alt + Del", description = "Close all windows" },
+  { keys = "Super + T", description = "Toggle window between tiling/floating" },
+  { keys = "Super + O", description = "Toggle popping window into sticky'n'floating" },
+  { keys = "Super + F", description = "Go full screen" },
+  { keys = "Super + Alt + F", description = "Go full width for the window" },
+  { keys = "Super + 1/2/3/4", description = "Jump to specific workspace" },
+  { keys = "Super + Tab", description = "Jump to next workspace" },
+  { keys = "Super + Shift + Tab", description = "Jump to previous workspace" },
+  { keys = "Super + Ctrl + Tab", description = "Jump to former workspace" },
+  { keys = "Super + Shift + 1/2/3/4", description = "Move window to workspace" },
+  { keys = "Super + Shift + Alt + Arrows", description = "Move workspaces to directional monitor" },
+  { keys = "Super + S", description = "Show scratchpad workspace overlay" },
+  { keys = "Super + Alt + S", description = "Move window to scratchpad workspace" },
+  { keys = "Ctrl + 1/2/3/..", description = "Jump to browser tab" },
+  { keys = "Super + Arrow", description = "Move focus to window in direction of arrow" },
+  { keys = "Super + Shift + Arrow", description = "Swap window with another in direction of arrow" },
+  { keys = "Super + Equal", description = "Grow windows to the left" },
+  { keys = "Super + Minus", description = "Grow windows to the right" },
+  { keys = "Super + Shift + Equal", description = "Grow windows to the bottom" },
+  { keys = "Super + Shift + Minus", description = "Grow windows to the top" },
+  { keys = "Super + G", description = "Toggle window grouping" },
+  { keys = "Super + Alt + G", description = "Move window out of grouping" },
+  { keys = "Super + Alt + Tab", description = "Cycle between windows in grouping" },
+  { keys = "Super + Alt + 1/2/3/4", description = "Jump to specific window in grouping" },
+  { keys = "Super + Alt + Arrow", description = "Move window into grouping in direction of arrow" },
+  { keys = "Super + Ctrl + Arrow", description = "Move between windows inside a tiling group" },
+]
+
+[[sections]]
+name = "Launching apps"
+note = "Change/add bindings in ~/.config/hypr/bindings.conf"
+hotkeys = [
+  { keys = "Super + Return", description = "Terminal" },
+  { keys = "Super + Shift + B", description = "Browser" },
+  { keys = "Super + Shift + Alt + B", description = "Browser (private/incognito)" },
+  { keys = "Super + Shift + F", description = "File manager" },
+  { keys = "Super + Shift + T", description = "Activity (btop)" },
+  { keys = "Super + Shift + M", description = "Music (Spotify)" },
+  { keys = "Super + Shift + /", description = "Password manager (1password)" },
+  { keys = "Super + Shift + N", description = "Neovim" },
+  { keys = "Super + Shift + C", description = "Calendar (HEY)" },
+  { keys = "Super + Shift + E", description = "Email (HEY)" },
+  { keys = "Super + Shift + A", description = "AI (ChatGPT)" },
+  { keys = "Super + Shift + G", description = "Messenger (Signal)" },
+  { keys = "Super + Shift + Ctrl + G", description = "Messenger (WhatsApp)" },
+  { keys = "Super + Shift + Alt + G", description = "Messenger (Google)" },
+  { keys = "Super + Shift + D", description = "Docker (LazyDocker)" },
+  { keys = "Super + Shift + O", description = "Obsidian" },
+  { keys = "Super + Shift + X", description = "X" },
+  { keys = "Super + Ctrl + S", description = "Share menu (via LocalSend)" },
+]
+
+[[sections]]
+name = "Universal clipboard"
+note = "Usually on Linux, you need Ctrl + Shift + C/V in terminal and Ctrl + C/V elsewhere. These work everywhere."
+hotkeys = [
+  { keys = "Super + C", description = "Copy" },
+  { keys = "Super + X", description = "Cut (not in terminal)" },
+  { keys = "Super + V", description = "Paste" },
+  { keys = "Super + Ctrl + V", description = "Clipboard manager" },
+]
+
+[[sections]]
+name = "Capture"
+note = "For screenrecordings, hit the hotkey to start, hit it again to stop. All options accessible under Capture in the Omarchy menu (Super + Alt + Space)."
+hotkeys = [
+  { keys = "Print Screen", description = "Screenshot with editing" },
+  { keys = "Shift + Print Screen", description = "Screenshot straight to clipboard" },
+  { keys = "Alt + Print Screen", description = "Screenrecord" },
+  { keys = "Super + Print Screen", description = "Color picker" },
+  { keys = "Alt + Shift + L", description = "Copy current URL from webapp or Chromium" },
+]
+
+[[sections]]
+name = "Notifications"
+hotkeys = [
+  { keys = "Super + ,", description = "Dismiss latest notification" },
+  { keys = "Super + Shift + ,", description = "Dismiss all notifications" },
+  { keys = "Super + Ctrl + ,", description = "Toggle silencing notifications" },
+  { keys = "Super + Alt + ,", description = "Invoke most recent notification" },
+]
+
+[[sections]]
+name = "Style"
+note = "Extra background images live in ~/.config/omarchy/current/backgrounds. All style options accessible under Style in the Omarchy menu (Super + Alt + Space)."
+hotkeys = [
+  { keys = "Super + Ctrl + Shift + Space", description = "Pick a new theme" },
+  { keys = "Super + Ctrl + Space", description = "Next background image for theme" },
+  { keys = "Super + Backspace", description = "Toggle transparency on a window" },
+]
+
+[[sections]]
+name = "Toggles"
+hotkeys = [
+  { keys = "Super + Ctrl + I", description = "Toggle idle/sleep prevention" },
+  { keys = "Super + Ctrl + N", description = "Toggle nightlight display temperature" },
+  { keys = "Super + Shift + Space", description = "Toggle the top bar" },
+  { keys = "Super + Mute", description = "Switch to next audio output" },
+]
+
+[[sections]]
+name = "Ghostty Terminal"
+hotkeys = [
+  { keys = "Ctrl + Shift + E", description = "New split below" },
+  { keys = "Ctrl + Shift + O", description = "New split besides" },
+  { keys = "Ctrl + Alt + Arrows", description = "Move between splits" },
+  { keys = "Super + Ctrl + Shift + Arrows", description = "Resize split by 10 lines" },
+  { keys = "Super + Ctrl + Shift + Alt + Arrows", description = "Resize split by 100 lines" },
+  { keys = "Ctrl + Shift + T", description = "New tab" },
+  { keys = "Ctrl + Shift + Arrows", description = "Move between tabs" },
+  { keys = "Alt + Numbers", description = "Go to specific tab" },
+]
+
+[[sections]]
+name = "File Manager"
+hotkeys = [
+  { keys = "Ctrl + L", description = "Go to path" },
+  { keys = "Space", description = "Preview file (arrows navigate)" },
+  { keys = "Backspace", description = "Go back one folder" },
+]
+
+[[sections]]
+name = "Apple Display Brightness Control"
+note = "Apple displays have their own brightness control via asdcontrol"
+hotkeys = [
+  { keys = "Ctrl + F1", description = "Turn down brightness" },
+  { keys = "Ctrl + F2", description = "Turn up brightness" },
+  { keys = "Ctrl + Shift + F2", description = "Turn up brightness to maximum" },
+]
+
+[[sections]]
+name = "Neovim (w/ lazyvim) - Navigation"
+note = "See all the Neovim hotkeys configured by LazyVim: https://www.lazyvim.org/keymaps"
+hotkeys = [
+  { keys = "Space", description = "Show command options" },
+  { keys = "Space Space", description = "Open file via fuzzy search" },
+  { keys = "Space E", description = "Toggle sidebar" },
+  { keys = "Space G G", description = "Show git controls" },
+  { keys = "Space S G", description = "Search file content" },
+  { keys = "Ctrl + W W", description = "Jump between sidebar and editor" },
+  { keys = "Ctrl + Left/right arrow", description = "Change size of sidebar" },
+  { keys = "Shift + H", description = "Go to left file tab" },
+  { keys = "Shift + L", description = "Go to right file tab" },
+  { keys = "Space B D", description = "Close file tab" },
+]
+
+[[sections]]
+name = "Neovim (w/ lazyvim) - Sidebar"
+hotkeys = [
+  { keys = "A", description = "Add new file in parent dir" },
+  { keys = "Shift + A", description = "Add new subdir in parent dir" },
+  { keys = "D", description = "Delete highlighted file/dir" },
+  { keys = "M", description = "Move highlighted file/dir" },
+  { keys = "R", description = "Rename highlighted file/dir" },
+  { keys = "?", description = "Show help for all commands" },
+]
+
+[[sections]]
+name = "Quick Emojis"
+note = "Use Super + Ctrl + E to show a complete emoji picker. These are quick access options."
+hotkeys = [
+  { keys = "CapsLock M S", description = "😄 smile" },
+  { keys = "CapsLock M C", description = "😂 cry" },
+  { keys = "CapsLock M L", description = "😍 love" },
+  { keys = "CapsLock M V", description = "✌️ victory" },
+  { keys = "CapsLock M H", description = "❤️ heart" },
+  { keys = "CapsLock M Y", description = "👍 yes" },
+  { keys = "CapsLock M N", description = "👎 no" },
+  { keys = "CapsLock M F", description = "🖕 fuck" },
+  { keys = "CapsLock M W", description = "🤞 wish" },
+  { keys = "CapsLock M R", description = "🤘 rock" },
+  { keys = "CapsLock M K", description = "😘 kiss" },
+  { keys = "CapsLock M E", description = "🙄 eyeroll" },
+  { keys = "CapsLock M P", description = "🙏 pray" },
+  { keys = "CapsLock M D", description = "🤤 drool" },
+  { keys = "CapsLock M M", description = "💰 money" },
+  { keys = "CapsLock M X", description = "🎉 xellebrate" },
+  { keys = "CapsLock M 1", description = "💯 100%" },
+  { keys = "CapsLock M T", description = "🥂 toast" },
+  { keys = "CapsLock M O", description = "👌 ok" },
+  { keys = "CapsLock M G", description = "👋 greeting" },
+  { keys = "CapsLock M A", description = "💪 arm" },
+  { keys = "CapsLock M B", description = "🤯 blowing" },
+]
+
+[[sections]]
+name = "Quick Completions"
+note = "Add more by editing ~/.XCompose, then run omarchy-restart-xcompose"
+hotkeys = [
+  { keys = "CapsLock Space Space", description = "— (mdash)" },
+  { keys = "CapsLock Space N", description = "Your name (as entered on setup)" },
+  { keys = "CapsLock Space E", description = "Your email (as entered on setup)" },
+]

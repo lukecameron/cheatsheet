@@ -3,6 +3,10 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "dependencies": {
+    "canvas": "latest",
+    "toml": "latest"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
