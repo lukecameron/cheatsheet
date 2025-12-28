@@ -38,6 +38,7 @@ const FONT_FAMILY = "Arial";
 const LINE_HEIGHT = 1.5;
 const COL_SPACING = 10;
 const MAX_LINES = 60;
+const MAX_PNG_HEIGHT = 1400; // Maximum height per PNG file in pixels
 
 function abbreviateKeys(keys: string): string {
   return keys
@@ -119,23 +120,60 @@ function countLines(sections: Section[], includeHeader: boolean = true): number 
   return count;
 }
 
-function splitSections(sections: Section[]): Section[][] {
+async function estimateSectionHeight(section: Section): Promise<number> {
+  const tempCanvas = createCanvas(PRINTER_WIDTH, 1);
+  const ctx = tempCanvas.getContext("2d");
+  const contentWidth = PRINTER_WIDTH - PADDING * 2;
+  const keyColWidth = Math.floor(contentWidth * 0.28);
+  const funcColWidth = contentWidth - keyColWidth - COL_SPACING;
+
+  let height = 0;
+
+  // Section heading
+  height += FONT_SIZE_HEADING * LINE_HEIGHT + 4;
+
+  // Note
+  if (section.note) {
+    const noteLines = wrapText(ctx, section.note, contentWidth, FONT_SIZE_TEXT - 1);
+    height += noteLines.length * (FONT_SIZE_TEXT * LINE_HEIGHT) + 8;
+  }
+
+  // Hotkeys table
+  if (section.hotkeys && section.hotkeys.length > 0) {
+    height += FONT_SIZE_KEYS * LINE_HEIGHT + 8; // Header
+
+    for (const hotkey of section.hotkeys) {
+      const abbreviatedKeys = abbreviateKeys(hotkey.keys);
+      const keyLines = wrapText(ctx, abbreviatedKeys, keyColWidth, FONT_SIZE_KEYS);
+      const descLines = wrapText(ctx, hotkey.description, funcColWidth, FONT_SIZE_TEXT);
+      const rowHeight =
+        Math.max(keyLines.length, descLines.length) * FONT_SIZE_TEXT * LINE_HEIGHT + 4;
+      height += rowHeight + 4;
+    }
+
+    height += 8; // Space after table
+  }
+
+  return height;
+}
+
+async function splitSections(sections: Section[]): Promise<Section[][]> {
   const parts: Section[][] = [];
   let currentPart: Section[] = [];
-  let currentLineCount = 3; // Title + blank + source
+  let currentHeight = PADDING + FONT_SIZE_TITLE * LINE_HEIGHT + 12; // Title + space
 
   for (const section of sections) {
-    const sectionLines = countLines([section], false);
-    
-    // Check if adding this section would exceed limit
-    if (currentLineCount + sectionLines > MAX_LINES && currentPart.length > 0) {
+    const sectionHeight = await estimateSectionHeight(section);
+
+    // Check if adding this section would exceed height limit
+    if (currentHeight + sectionHeight > MAX_PNG_HEIGHT && currentPart.length > 0) {
       // Save current part and start new one
       parts.push(currentPart);
       currentPart = [section];
-      currentLineCount = 3 + sectionLines;
+      currentHeight = PADDING + FONT_SIZE_TITLE * LINE_HEIGHT + 12 + sectionHeight;
     } else {
       currentPart.push(section);
-      currentLineCount += sectionLines;
+      currentHeight += sectionHeight;
     }
   }
 
@@ -358,8 +396,8 @@ async function generateCheatsheetPNGs(tomlPath: string): Promise<PNGFile[]> {
   const data = parse(content) as CheatsheetData;
   const { metadata, sections } = data;
 
-  // Split sections into parts
-  const parts = splitSections(sections);
+  // Split sections into parts based on actual height
+  const parts = await splitSections(sections);
 
   const pngFiles: PNGFile[] = [];
 
