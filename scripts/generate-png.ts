@@ -2,6 +2,8 @@ import { readdir, readFile, writeFile, mkdir } from "fs/promises";
 import { extname, basename, join } from "path";
 import { parse } from "toml";
 import { createCanvas } from "canvas";
+import { createWriteStream } from "fs";
+import { promisify } from "util";
 
 interface Hotkey {
   keys: string;
@@ -299,8 +301,41 @@ async function generatePNGForSections(
     }
   }
 
-  // Write PNG
-  const buffer = canvas.toBuffer("image/png");
+  // Get image data and apply 1-bit threshold (no anti-aliasing)
+  const imageData = renderCtx.getImageData(
+    0,
+    0,
+    PRINTER_WIDTH,
+    totalHeight
+  );
+  const data = imageData.data;
+
+  // Apply threshold to convert to pure black and white (1-bit)
+  // Any pixel with luminance > 127.5 becomes white (255), else black (0)
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+    
+    // Calculate luminance using standard formula
+    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+    
+    // Threshold: > 127.5 = white (255), else black (0)
+    const bw = luminance > 127.5 ? 255 : 0;
+    data[i] = bw;
+    data[i + 1] = bw;
+    data[i + 2] = bw;
+    data[i + 3] = 255; // Alpha = opaque
+  }
+
+  // Create a new canvas with the thresholded image data
+  const bwCanvas = createCanvas(PRINTER_WIDTH, totalHeight);
+  const bwCtx = bwCanvas.getContext("2d");
+  bwCtx.putImageData(imageData, 0, 0);
+
+  // Save as PNG (canvas outputs 8-bit, but our image is pure B&W)
+  const buffer = bwCanvas.toBuffer("image/png");
+
   return { buffer, height: totalHeight };
 }
 
