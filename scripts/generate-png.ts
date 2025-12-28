@@ -30,13 +30,13 @@ interface PNGFile {
 // Constants from MXW01_READABILITY_GUIDE
 const PRINTER_WIDTH = 384;
 const PADDING = 16;
-const FONT_SIZE_TITLE = 22;
-const FONT_SIZE_HEADING = 18;
-const FONT_SIZE_TEXT = 15;
-const FONT_SIZE_KEYS = 14;
-const FONT_FAMILY = "Arial";
-const LINE_HEIGHT = 1.4;
-const COL_SPACING = 12;
+const FONT_SIZE_TITLE = 24;
+const FONT_SIZE_HEADING = 20;
+const FONT_SIZE_TEXT = 17;
+const FONT_SIZE_KEYS = 16;
+const FONT_FAMILY = "Roboto Mono";
+const LINE_HEIGHT = 1.5;
+const COL_SPACING = 10;
 const MAX_LINES = 60;
 
 function abbreviateKeys(keys: string): string {
@@ -180,7 +180,8 @@ async function generatePNGForSections(
 
     if (section.hotkeys && section.hotkeys.length > 0) {
       // Calculate table dimensions
-      const keyColWidth = Math.floor(contentWidth * 0.35);
+      // Reduce key column since abbreviations are much shorter
+      const keyColWidth = Math.floor(contentWidth * 0.28);
       const funcColWidth = contentWidth - keyColWidth - COL_SPACING;
 
       // Header row
@@ -255,7 +256,8 @@ async function generatePNGForSections(
     }
 
     if (section.hotkeys && section.hotkeys.length > 0) {
-      const keyColWidth = Math.floor(contentWidth * 0.35);
+      // Reduce key column since abbreviations are much shorter
+      const keyColWidth = Math.floor(contentWidth * 0.28);
       const funcColWidth = contentWidth - keyColWidth - COL_SPACING;
       const tableStartX = PADDING;
 
